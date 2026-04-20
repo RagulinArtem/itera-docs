@@ -1,0 +1,649 @@
+<!doctype html>
+<html lang="ru">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<title>ITERA — дневник, который помнит тебя</title>
+<meta name="description" content="ИИ-дневник саморефлексии, который видит паттерны в ваших записях и мягко отражает их обратно. Для тех, кто в терапии, рядом с ней или сам ищет ясности." />
+<meta property="og:title" content="ITERA — дневник, который помнит тебя" />
+<meta property="og:description" content="ИИ-дневник саморефлексии: 4 техники, память между записями, недельные инсайты. Бесплатно на время беты." />
+<meta property="og:type" content="website" />
+<meta property="og:url" content="https://itera-diary.ru" />
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Nunito:wght@600;700;800&family=Merriweather:wght@400;400i;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --primary:#6C5CE7;
+    --primary-light:#A29BFE;
+    --primary-dark:#5A4BD1;
+    --teal:#00CEC9;
+    --yellow:#FDCB6E;
+    --coral:#FF7675;
+    --bg:#FAFAFA;
+    --bg-lav:#F7F5FB;
+    --surface:#FFFFFF;
+    --text:#2D3436;
+    --text-secondary:#636E72;
+    --text-muted:#8B8D98;
+    --border:rgba(108,92,231,.12);
+    --radius:1.25rem;
+    --radius-lg:1.75rem;
+    --shadow-soft:0 4px 20px rgba(108,92,231,.08);
+    --shadow-lg:0 14px 44px -12px rgba(108,92,231,.22);
+  }
+  *{box-sizing:border-box}
+  html,body{margin:0;padding:0}
+  html{scroll-behavior:smooth}
+  body{
+    font-family:'Inter',-apple-system,BlinkMacSystemFont,sans-serif;
+    background:linear-gradient(180deg,#F7F5FB 0%,#FAFAFA 40%,#FFFFFF 100%);
+    color:var(--text);
+    line-height:1.65;
+    -webkit-font-smoothing:antialiased;
+    overflow-x:hidden;
+  }
+  h1,h2,h3,h4{font-family:'Nunito',system-ui,sans-serif;font-weight:800;letter-spacing:-.015em;margin:0;line-height:1.15}
+  h1{font-size:clamp(2.2rem,5vw,3.6rem);line-height:1.08}
+  h2{font-size:clamp(1.7rem,3vw,2.3rem)}
+  h3{font-size:1.2rem;font-weight:700}
+  p{margin:0 0 1rem}
+  a{color:var(--primary);text-decoration:none;transition:color .2s}
+  a:hover{color:var(--primary-dark)}
+  em{font-family:'Merriweather',serif;font-style:italic;font-weight:400;color:var(--text)}
+
+  .wrap{max-width:1100px;margin:0 auto;padding:0 clamp(1rem,4vw,2rem)}
+
+  /* ——— nav ——— */
+  .nav{
+    position:sticky;top:0;z-index:50;
+    background:rgba(250,250,250,.85);
+    backdrop-filter:saturate(1.6) blur(14px);
+    -webkit-backdrop-filter:saturate(1.6) blur(14px);
+    border-bottom:1px solid var(--border);
+  }
+  .nav-inner{display:flex;align-items:center;justify-content:space-between;padding:.8rem 0;gap:1rem}
+  .brand{display:flex;align-items:center;gap:.55rem;font-family:'Nunito',sans-serif;font-weight:800;font-size:1.1rem}
+  .brand .mark{width:32px;height:32px;border-radius:9px;background:linear-gradient(135deg,var(--primary),var(--primary-light));display:flex;align-items:center;justify-content:center;color:#fff;font-weight:800}
+  .nav-links{display:flex;gap:.2rem}
+  .nav-links a{display:inline-block;padding:.45rem .8rem;border-radius:999px;color:var(--text-secondary);font-weight:500;font-size:.93rem}
+  .nav-links a:hover{background:rgba(108,92,231,.08);color:var(--primary)}
+  @media(max-width:720px){.nav-links{display:none}}
+  .btn{
+    display:inline-flex;align-items:center;gap:.5rem;
+    padding:.7rem 1.15rem;border-radius:999px;
+    font-weight:600;font-size:.95rem;
+    background:var(--primary);color:#fff;
+    transition:transform .2s,box-shadow .2s,background .2s;
+    white-space:nowrap;
+  }
+  .btn:hover{background:var(--primary-dark);color:#fff;transform:translateY(-1px);box-shadow:var(--shadow-lg)}
+  .btn.ghost{background:transparent;color:var(--primary);border:1px solid var(--border)}
+  .btn.ghost:hover{background:rgba(108,92,231,.08);color:var(--primary)}
+  .btn.lg{padding:.95rem 1.6rem;font-size:1.02rem}
+
+  /* ——— hero ——— */
+  .hero{padding:clamp(3rem,7vw,5.5rem) 0 clamp(2.5rem,5vw,4rem);position:relative;text-align:center}
+  .hero::before{
+    content:"";position:absolute;top:-10%;right:-10%;width:60vw;height:60vw;max-width:700px;max-height:700px;
+    background:radial-gradient(circle,rgba(162,155,254,.35),transparent 60%);
+    filter:blur(22px);pointer-events:none;z-index:0;
+  }
+  .hero::after{
+    content:"";position:absolute;bottom:-20%;left:-15%;width:55vw;height:55vw;max-width:650px;max-height:650px;
+    background:radial-gradient(circle,rgba(0,206,201,.22),transparent 60%);
+    filter:blur(22px);pointer-events:none;z-index:0;
+  }
+  .hero > *{position:relative;z-index:1}
+  .eyebrow{
+    display:inline-flex;align-items:center;gap:.4rem;
+    padding:.4rem .9rem;border-radius:999px;
+    background:rgba(108,92,231,.1);color:var(--primary);
+    font-weight:600;font-size:.85rem;letter-spacing:.02em;
+    margin-bottom:1.4rem;
+  }
+  .eyebrow .dot{width:7px;height:7px;border-radius:50%;background:var(--primary);box-shadow:0 0 0 4px rgba(108,92,231,.2);animation:pulse 2.4s infinite}
+  @keyframes pulse{0%,100%{box-shadow:0 0 0 4px rgba(108,92,231,.2)}50%{box-shadow:0 0 0 8px rgba(108,92,231,0)}}
+  .headline{
+    font-size:clamp(2.4rem,5.5vw,4rem);
+    background:linear-gradient(135deg,var(--primary) 0%,var(--teal) 100%);
+    -webkit-background-clip:text;background-clip:text;color:transparent;
+    max-width:17ch;margin:0 auto 1.4rem;
+  }
+  .lede{
+    font-size:clamp(1.05rem,1.6vw,1.25rem);
+    color:var(--text-secondary);
+    max-width:620px;margin:0 auto 2rem;
+    line-height:1.55;
+  }
+  .hero-cta{display:flex;gap:.75rem;justify-content:center;flex-wrap:wrap}
+  .hero-sub{
+    margin-top:1.5rem;color:var(--text-muted);font-size:.9rem;
+  }
+
+  /* ——— section shell ——— */
+  section{padding:clamp(3rem,6vw,5rem) 0}
+  .sec-head{text-align:center;max-width:640px;margin:0 auto clamp(2rem,4vw,3.2rem)}
+  .sec-head .eyebrow{background:rgba(0,206,201,.15);color:#008F8B}
+  .sec-head .eyebrow .dot{background:var(--teal);box-shadow:0 0 0 4px rgba(0,206,201,.2)}
+  .sec-head p{color:var(--text-secondary);margin-top:.6rem;font-size:1.05rem}
+
+  /* ——— problem cards ——— */
+  .problem{background:linear-gradient(180deg,transparent 0%,rgba(108,92,231,.04) 100%)}
+  .pains{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:1rem}
+  .pain{
+    background:var(--surface);border:1px solid var(--border);
+    border-radius:var(--radius);padding:1.5rem;
+    box-shadow:var(--shadow-soft);
+  }
+  .pain .quote{
+    font-family:'Merriweather',serif;font-style:italic;
+    color:var(--text);font-size:1.02rem;line-height:1.55;
+    padding-left:1rem;border-left:3px solid var(--primary-light);
+  }
+  .pain .who{margin-top:.8rem;color:var(--text-muted);font-size:.85rem;font-weight:500}
+
+  /* ——— pillars ——— */
+  .pillars{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:1.2rem}
+  .pillar{
+    background:var(--surface);border:1px solid var(--border);
+    border-radius:var(--radius-lg);padding:1.8rem;
+    box-shadow:var(--shadow-soft);
+    transition:transform .25s,box-shadow .25s;
+  }
+  .pillar:hover{transform:translateY(-4px);box-shadow:var(--shadow-lg)}
+  .pillar .icon{
+    width:52px;height:52px;border-radius:14px;
+    display:flex;align-items:center;justify-content:center;
+    font-size:1.5rem;margin-bottom:1rem;
+  }
+  .pillar.a .icon{background:rgba(108,92,231,.12);color:var(--primary)}
+  .pillar.b .icon{background:rgba(0,206,201,.15);color:#008F8B}
+  .pillar.c .icon{background:rgba(253,203,110,.2);color:#B5862A}
+  .pillar h3{margin-bottom:.5rem}
+  .pillar p{color:var(--text-secondary);font-size:.98rem;margin:0}
+
+  /* ——— how it works ——— */
+  .steps{display:grid;grid-template-columns:repeat(auto-fit,minmax(250px,1fr));gap:1.2rem;position:relative}
+  .step{
+    background:var(--surface);border:1px solid var(--border);
+    border-radius:var(--radius);padding:1.6rem;
+    position:relative;
+  }
+  .step-num{
+    position:absolute;top:-16px;left:1.6rem;
+    width:36px;height:36px;border-radius:50%;
+    background:linear-gradient(135deg,var(--primary),var(--primary-light));
+    color:#fff;font-family:'Nunito',sans-serif;font-weight:800;
+    display:flex;align-items:center;justify-content:center;
+    box-shadow:var(--shadow-soft);
+  }
+  .step h3{margin:.6rem 0 .5rem}
+  .step p{color:var(--text-secondary);font-size:.96rem;margin:0}
+  .step .demo{
+    margin-top:1rem;padding:.9rem 1rem;
+    background:linear-gradient(135deg,rgba(108,92,231,.06),rgba(0,206,201,.06));
+    border-radius:.8rem;
+    font-family:'Merriweather',serif;font-style:italic;
+    color:var(--text);font-size:.95rem;line-height:1.5;
+  }
+  .step .demo .ai{
+    display:block;margin-top:.6rem;padding-top:.6rem;
+    border-top:1px dashed rgba(108,92,231,.2);
+    color:var(--primary-dark);font-style:normal;font-family:'Inter',sans-serif;
+  }
+
+  /* ——— personas ——— */
+  .personas{background:linear-gradient(180deg,rgba(0,206,201,.05) 0%,transparent 100%)}
+  .persona-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:1.2rem}
+  .persona{
+    background:var(--surface);border:1px solid var(--border);
+    border-radius:var(--radius-lg);padding:1.8rem;
+    box-shadow:var(--shadow-soft);
+  }
+  .persona .avatar{
+    width:56px;height:56px;border-radius:50%;
+    display:flex;align-items:center;justify-content:center;
+    font-size:1.8rem;margin-bottom:1rem;
+  }
+  .persona.a .avatar{background:rgba(108,92,231,.12)}
+  .persona.b .avatar{background:rgba(0,206,201,.15)}
+  .persona.c .avatar{background:rgba(253,203,110,.2)}
+  .persona h3{margin-bottom:.3rem}
+  .persona .tag{color:var(--text-muted);font-size:.85rem;font-weight:500;margin-bottom:.8rem}
+  .persona p{color:var(--text-secondary);font-size:.96rem}
+
+  /* ——— stories ——— */
+  .stories-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:1.2rem}
+  .story{
+    background:var(--surface);border:1px solid var(--border);
+    border-radius:var(--radius);padding:1.7rem;
+    box-shadow:var(--shadow-soft);
+    display:flex;flex-direction:column;
+  }
+  .story .body{
+    font-family:'Merriweather',serif;
+    color:var(--text);font-size:1rem;line-height:1.65;
+    flex:1;
+  }
+  .story .body::before{content:"„";font-size:3rem;color:var(--primary-light);line-height:0;margin-right:.2em;vertical-align:-.4em}
+  .story .meta{
+    margin-top:1.2rem;padding-top:1rem;border-top:1px solid var(--border);
+    color:var(--text-muted);font-size:.85rem;font-style:normal;font-family:'Inter',sans-serif;
+  }
+  .disclaimer{
+    text-align:center;color:var(--text-muted);font-size:.85rem;
+    margin-top:2rem;max-width:600px;margin-left:auto;margin-right:auto;
+  }
+
+  /* ——— privacy ——— */
+  .privacy{
+    background:var(--surface);border:1px solid var(--border);
+    border-radius:var(--radius-lg);padding:clamp(1.8rem,3vw,2.6rem);
+    box-shadow:var(--shadow-soft);
+    display:grid;grid-template-columns:auto 1fr;gap:1.5rem;align-items:start;
+  }
+  @media(max-width:640px){.privacy{grid-template-columns:1fr}}
+  .privacy .shield{
+    width:64px;height:64px;border-radius:18px;
+    background:rgba(253,203,110,.2);color:#B5862A;
+    display:flex;align-items:center;justify-content:center;font-size:2rem;
+  }
+  .privacy ul{margin:.8rem 0 0;padding:0;list-style:none}
+  .privacy li{padding:.3rem 0 .3rem 1.6rem;position:relative;color:var(--text-secondary)}
+  .privacy li::before{content:"✓";position:absolute;left:0;color:var(--teal);font-weight:700}
+
+  /* ——— pricing ——— */
+  .pricing{text-align:center}
+  .price-card{
+    max-width:480px;margin:0 auto;
+    background:var(--surface);border:2px solid var(--primary);
+    border-radius:var(--radius-lg);padding:2.2rem;
+    box-shadow:var(--shadow-lg);
+    position:relative;
+  }
+  .price-badge{
+    position:absolute;top:-14px;left:50%;transform:translateX(-50%);
+    background:linear-gradient(135deg,var(--primary),var(--primary-light));
+    color:#fff;padding:.35rem 1rem;border-radius:999px;
+    font-weight:700;font-size:.78rem;letter-spacing:.05em;text-transform:uppercase;
+  }
+  .price-card .amount{font-family:'Nunito',sans-serif;font-size:3rem;font-weight:800;color:var(--primary);margin:.5rem 0 .3rem}
+  .price-card .amount small{font-size:1rem;font-weight:500;color:var(--text-muted)}
+  .price-card ul{list-style:none;padding:0;margin:1.5rem 0;text-align:left}
+  .price-card li{padding:.4rem 0 .4rem 1.8rem;position:relative;color:var(--text)}
+  .price-card li::before{content:"✓";position:absolute;left:.3rem;color:var(--teal);font-weight:800}
+  .price-card .after{margin-top:1rem;color:var(--text-muted);font-size:.88rem}
+
+  /* ——— faq ——— */
+  .faq-list{max-width:720px;margin:0 auto}
+  .faq-item{
+    background:var(--surface);border:1px solid var(--border);
+    border-radius:var(--radius);margin-bottom:.6rem;overflow:hidden;
+    transition:box-shadow .2s;
+  }
+  .faq-item[open]{box-shadow:var(--shadow-soft)}
+  .faq-item summary{
+    padding:1.1rem 1.4rem;font-weight:600;cursor:pointer;
+    display:flex;justify-content:space-between;gap:1rem;align-items:center;
+    list-style:none;
+  }
+  .faq-item summary::-webkit-details-marker{display:none}
+  .faq-item summary::after{
+    content:"+";font-size:1.4rem;color:var(--primary);font-weight:400;
+    transition:transform .2s;
+  }
+  .faq-item[open] summary::after{transform:rotate(45deg)}
+  .faq-item .answer{padding:0 1.4rem 1.2rem;color:var(--text-secondary);font-size:.98rem}
+
+  /* ——— final cta ——— */
+  .final{
+    background:linear-gradient(135deg,var(--primary) 0%,var(--primary-light) 50%,var(--teal) 100%);
+    color:#fff;text-align:center;
+    padding:clamp(3rem,6vw,5rem) 0;
+    border-radius:var(--radius-lg);
+    margin:clamp(2rem,4vw,3rem) 0;
+    position:relative;overflow:hidden;
+  }
+  .final::before{
+    content:"";position:absolute;inset:0;
+    background:radial-gradient(circle at 30% 20%,rgba(255,255,255,.2),transparent 50%);
+  }
+  .final > *{position:relative;z-index:1}
+  .final h2{color:#fff;margin-bottom:.8rem}
+  .final p{color:rgba(255,255,255,.92);font-size:1.1rem;max-width:540px;margin:0 auto 2rem}
+  .final .btn{background:#fff;color:var(--primary)}
+  .final .btn:hover{background:#fff;color:var(--primary-dark);transform:translateY(-2px);box-shadow:0 14px 34px rgba(0,0,0,.2)}
+
+  /* ——— footer ——— */
+  footer{padding:2.5rem 0 3rem;color:var(--text-muted);font-size:.88rem;text-align:center;border-top:1px solid var(--border)}
+  footer a{color:var(--text-secondary)}
+  footer a:hover{color:var(--primary)}
+  .foot-links{display:flex;gap:1.2rem;justify-content:center;flex-wrap:wrap;margin-bottom:1rem}
+</style>
+</head>
+<body>
+
+<!-- ——— NAV ——— -->
+<nav class="nav">
+  <div class="wrap nav-inner">
+    <a href="#" class="brand" style="color:inherit">
+      <span class="mark">I</span>
+      <span>ITERA</span>
+    </a>
+    <div class="nav-links">
+      <a href="#problem">Знакомо?</a>
+      <a href="#how">Как работает</a>
+      <a href="#for-whom">Для кого</a>
+      <a href="#stories">Истории</a>
+      <a href="#faq">FAQ</a>
+    </div>
+    <a class="btn" href="https://itera-diary.ru/register">Попробовать</a>
+  </div>
+</nav>
+
+<!-- ——— HERO ——— -->
+<header class="hero">
+  <div class="wrap">
+    <div class="eyebrow"><span class="dot"></span>Закрытая бета · бесплатно</div>
+    <h1 class="headline">Дневник, который помнит тебя</h1>
+    <p class="lede">
+      ITERA — это ИИ-дневник саморефлексии. Вы пишете как чувствуете, он замечает паттерны,
+      мягко отражает их обратно и помогает увидеть то, что уже было сказано — но не услышано.
+    </p>
+    <div class="hero-cta">
+      <a class="btn lg" href="https://itera-diary.ru/register">Начать бесплатно</a>
+      <a class="btn lg ghost" href="#how">Посмотреть, как это работает</a>
+    </div>
+    <div class="hero-sub">Без рекламы. Без диагнозов. Только вы и ваши мысли.</div>
+  </div>
+</header>
+
+<!-- ——— PROBLEM ——— -->
+<section class="problem" id="problem">
+  <div class="wrap">
+    <div class="sec-head">
+      <div class="eyebrow"><span class="dot"></span>Знакомо?</div>
+      <h2>Мысли крутятся, а ясности — нет</h2>
+      <p>Мы часто теряем важное: инсайт с терапии, тему, которая повторяется неделями, повод, с которого всё начинается.</p>
+    </div>
+    <div class="pains">
+      <div class="pain">
+        <div class="quote">«Веду заметки в ноуте, но перечитывать их невозможно. Всё сливается в одну кашу».</div>
+        <div class="who">— человек, который пробовал 5 приложений-дневников</div>
+      </div>
+      <div class="pain">
+        <div class="quote">«После терапии хочется что-то фиксировать между сессиями, но руки не доходят».</div>
+        <div class="who">— взрослый в долгосрочной терапии</div>
+      </div>
+      <div class="pain">
+        <div class="quote">«Понимаю, что паттерн повторяется. Но каждый раз встречаю его как в первый раз».</div>
+        <div class="who">— тот, кто давно работает над собой</div>
+      </div>
+      <div class="pain">
+        <div class="quote">«Не могу позволить себе терапию сейчас. Но какое-то пространство для рефлексии нужно».</div>
+        <div class="who">— студент, фрилансер, молодой родитель</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ——— PILLARS ——— -->
+<section>
+  <div class="wrap">
+    <div class="sec-head">
+      <div class="eyebrow"><span class="dot"></span>Что делает ITERA</div>
+      <h2>Три вещи, за которые её полюбят</h2>
+    </div>
+    <div class="pillars">
+      <div class="pillar a">
+        <div class="icon">🧠</div>
+        <h3>ИИ с памятью между записями</h3>
+        <p>Не «обнули всё и начнём заново». Когда вы пишете сегодня, ITERA видит, что вы писали вчера, неделю назад — и мягко проводит связи. Так как это делал бы внимательный друг.</p>
+      </div>
+      <div class="pillar b">
+        <div class="icon">🧭</div>
+        <h3>4 техники, а не «расскажите о себе»</h3>
+        <p>Свободное письмо, СМЭР (КПТ), работа с тревогой, благодарность. Вы выбираете технику — она направляет структуру, вы сохраняете голос.</p>
+      </div>
+      <div class="pillar c">
+        <div class="icon">🔒</div>
+        <h3>Тёплый, не клинический тон</h3>
+        <p>Без диагнозов, без «я вижу, что…», без советов из учебника. Если связи с прошлым нет — ITERA просто рядом. Это важно.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ——— HOW IT WORKS ——— -->
+<section id="how" style="background:linear-gradient(180deg,transparent,rgba(108,92,231,.05))">
+  <div class="wrap">
+    <div class="sec-head">
+      <div class="eyebrow"><span class="dot"></span>Как это работает</div>
+      <h2>Три шага, которые занимают 5 минут в день</h2>
+    </div>
+    <div class="steps">
+      <div class="step">
+        <div class="step-num">1</div>
+        <h3>Выбираете технику</h3>
+        <p>Свободное письмо — когда хочется выговориться. СМЭР — когда нужно распутать мысль. Работа с тревогой — когда накрывает. Благодарность — когда важно зафиксировать хорошее.</p>
+        <div class="demo">
+          🌿 Благодарность · 3 минуты
+        </div>
+      </div>
+      <div class="step">
+        <div class="step-num">2</div>
+        <h3>Пишете так, как чувствуете</h3>
+        <p>Без ограничений по длине. Без осуждения. Просто вы, ваши слова и ваше настроение одним тапом по смайлу.</p>
+        <div class="demo">
+          <em>Сегодня получилось спокойно проговорить с мамой ту тему, от которой обычно я закрываюсь. Кажется, это благодаря тому, что проговорила её с терапевтом вчера…</em>
+        </div>
+      </div>
+      <div class="step">
+        <div class="step-num">3</div>
+        <h3>Получаете отклик с контекстом</h3>
+        <p>ITERA замечает, что вы писали раньше, и отражает связи. Не советы — наблюдения. А в конце недели — короткий инсайт по всем записям.</p>
+        <div class="demo">
+          <em>Ты писала о той же теме с мамой на прошлой неделе — тогда разговор её избегала.</em>
+          <span class="ai">— ИИ ITERA, учитывая последние записи</span>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ——— FOR WHOM ——— -->
+<section class="personas" id="for-whom">
+  <div class="wrap">
+    <div class="sec-head">
+      <div class="eyebrow"><span class="dot"></span>Для кого</div>
+      <h2>Три сценария, в которых ITERA полезна</h2>
+    </div>
+    <div class="persona-grid">
+      <div class="persona a">
+        <div class="avatar">🛋️</div>
+        <h3>В терапии</h3>
+        <div class="tag">работа между сессиями</div>
+        <p>Вы ходите к психологу — но терапия раз в неделю. ITERA даёт пространство фиксировать инсайты, эмоции и триггеры между встречами. Материал становится богаче, прогресс — заметнее.</p>
+      </div>
+      <div class="persona b">
+        <div class="avatar">🌱</div>
+        <h3>Рядом с терапией</h3>
+        <div class="tag">когда специалист недоступен</div>
+        <p>Терапия не подходит по деньгам, графику или опыту. Нужен способ разбираться со своими состояниями, не теряя структуры и доброжелательности. ITERA не заменяет терапевта, но не оставляет одного.</p>
+      </div>
+      <div class="persona c">
+        <div class="avatar">🧘</div>
+        <h3>Осознанный путь</h3>
+        <div class="tag">самопознание без рамок</div>
+        <p>Вы и так ведёте заметки, читаете про КПТ, пробовали медитации. Но хотелось бы, чтобы всё это собиралось в общую картину — чтобы видеть рост, а не только отдельные точки.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ——— STORIES ——— -->
+<section id="stories">
+  <div class="wrap">
+    <div class="sec-head">
+      <div class="eyebrow"><span class="dot"></span>Истории</div>
+      <h2>Как люди используют ITERA</h2>
+      <p>Собирательные сценарии на основе бесед с первыми пользователями.</p>
+    </div>
+    <div class="stories-grid">
+      <div class="story">
+        <div class="body">
+          На третьей неделе я увидела инсайт недели — ITERA подсветила, что я пять раз упоминала одну и ту же коллегу в контексте тревоги. С терапевтом мы разобрали это за сессию. Я бы сама никогда не заметила — мысли расплывались.
+        </div>
+        <div class="meta">— женщина, 32, в терапии 1.5 года</div>
+      </div>
+      <div class="story">
+        <div class="body">
+          Я не думал, что снова буду писать дневник. В детстве просто забрасывал. Тут другое: не «пустой экран, напиши что-нибудь», а техника, которая ведёт. СМЭР спасает, когда не могу понять, что со мной вообще происходит.
+        </div>
+        <div class="meta">— айтишник, 27, без терапии</div>
+      </div>
+      <div class="story">
+        <div class="body">
+          Когда панические атаки накрывают ночью, я открываю работу с тревогой. Вопросы «худший исход / вероятность / совет другу» возвращают голову в порядок. Это как КПТ-упражнение, только в кармане.
+        </div>
+        <div class="meta">— родитель в декрете, 34</div>
+      </div>
+    </div>
+    <p class="disclaimer">
+      Истории — собирательные образы, составленные из бесед с первыми пользователями закрытой беты.
+      Имена и детали обобщены. Реальных отзывов с фотографиями мы не фабрикуем.
+    </p>
+  </div>
+</section>
+
+<!-- ——— PRIVACY ——— -->
+<section>
+  <div class="wrap">
+    <div class="privacy">
+      <div class="shield">🔐</div>
+      <div>
+        <h2 style="font-size:1.6rem">Ваши записи видны только вам</h2>
+        <p style="color:var(--text-secondary)">
+          Мы работаем с очень чувствительным материалом. Поэтому по умолчанию:
+        </p>
+        <ul>
+          <li>Записи хранятся на защищённых серверах Supabase с построчной изоляцией (RLS) — доступ только по вашему логину</li>
+          <li>Мы не тренируем ИИ на ваших записях и не отправляем их третьим лицам</li>
+          <li>Можно удалить аккаунт и все данные одной кнопкой</li>
+          <li>Можно экспортировать весь дневник в PDF для себя — в любой момент</li>
+          <li>Никакой рекламы, никаких трекеров «для лучшего маркетинга»</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ——— PRICING ——— -->
+<section class="pricing" id="pricing">
+  <div class="wrap">
+    <div class="sec-head">
+      <div class="eyebrow"><span class="dot"></span>Цена</div>
+      <h2>Пока бета — бесплатно</h2>
+      <p>Мы выстраиваем продукт вместе с первыми пользователями и хотим честной цены только когда ITERA действительно заменяет часы на разборки в голове.</p>
+    </div>
+    <div class="price-card">
+      <div class="price-badge">Закрытая бета</div>
+      <div class="amount">0 ₽<small> / навсегда для ранних пользователей</small></div>
+      <p style="color:var(--text-secondary);margin-bottom:0">Все техники, AI-память, недельные инсайты и PDF-экспорт.</p>
+      <ul>
+        <li>4 техники рефлексии</li>
+        <li>ИИ-отклик на каждую запись с памятью</li>
+        <li>Недельные инсайты по всем записям</li>
+        <li>История, поиск, график настроения</li>
+        <li>Экспорт всего дневника в PDF</li>
+      </ul>
+      <a class="btn lg" href="https://itera-diary.ru/register" style="width:100%;justify-content:center">Попробовать — бесплатно</a>
+      <p class="after">После беты: подписка ~299 ₽ / мес с 7-дневным триалом.<br>Ранние пользователи получат постоянную скидку.</p>
+    </div>
+  </div>
+</section>
+
+<!-- ——— FAQ ——— -->
+<section id="faq">
+  <div class="wrap">
+    <div class="sec-head">
+      <div class="eyebrow"><span class="dot"></span>Часто спрашивают</div>
+      <h2>Короткие ответы на главное</h2>
+    </div>
+    <div class="faq-list">
+      <details class="faq-item">
+        <summary>ITERA заменяет психотерапевта?</summary>
+        <div class="answer">
+          Нет, и мы честно пишем это везде. ITERA — дневник с умным откликом, а не медицинский сервис.
+          Она не ставит диагнозы, не назначает лечение и не работает в кризисных ситуациях. Если вы переживаете
+          тяжёлый период, важно рядом иметь живого специалиста. ITERA помогает между сессиями — или тогда, когда
+          терапия временно недоступна.
+        </div>
+      </details>
+      <details class="faq-item">
+        <summary>Что происходит с моими записями? Их читают люди?</summary>
+        <div class="answer">
+          Нет. Записи лежат в зашифрованной базе с row-level security: никто, кроме вас, их не видит —
+          ни мы, ни другие пользователи. Обработка ИИ-отклика идёт через OpenRouter / OpenAI без сохранения
+          на их стороне. Мы не тренируем модели на вашем дневнике. Удалить аккаунт можно одной кнопкой в настройках.
+        </div>
+      </details>
+      <details class="faq-item">
+        <summary>Я не умею писать дневник — мне подойдёт?</summary>
+        <div class="answer">
+          Именно поэтому и сделаны структурированные техники: вам не нужно «с чего начать». В СМЭР, работе с
+          тревогой и благодарности уже есть вопросы. В свободном письме ИИ подхватывает любой поток.
+          Первая запись может быть две фразы. Этого достаточно.
+        </div>
+      </details>
+      <details class="faq-item">
+        <summary>Я в терапии. Стоит ли говорить терапевту?</summary>
+        <div class="answer">
+          Мы рекомендуем — да. Записи между сессиями часто становятся отличным материалом для обсуждения,
+          особенно недельные инсайты. Некоторые пользователи приносят PDF-экспорт на важные сессии.
+        </div>
+      </details>
+      <details class="faq-item">
+        <summary>Сколько времени нужно в день?</summary>
+        <div class="answer">
+          Ровно столько, сколько у вас есть. От 2 минут (одна благодарность) до 20 (глубокое СМЭР).
+          Большинство ранних пользователей пишут 5–10 минут перед сном или с утренним кофе.
+        </div>
+      </details>
+      <details class="faq-item">
+        <summary>Почему это будет платно потом?</summary>
+        <div class="answer">
+          ИИ-обработка каждой записи стоит реальных денег. Бесплатность без ограничений превратит сервис
+          в гонку за инвестициями и неизбежную рекламу. Мы хотим прозрачную модель: подписка, которая покрывает
+          себестоимость и развитие — и никакой монетизации ваших данных. Ранние пользователи беты получат
+          постоянную скидку.
+        </div>
+      </details>
+    </div>
+  </div>
+</section>
+
+<!-- ——— FINAL CTA ——— -->
+<div class="wrap">
+  <div class="final">
+    <h2>Сделайте первую запись сегодня</h2>
+    <p>Это займёт меньше времени, чем прокрутить ленту. А увидеть вы можете — больше, чем ожидали.</p>
+    <a class="btn lg" href="https://itera-diary.ru/register">Начать бесплатно</a>
+  </div>
+</div>
+
+<footer>
+  <div class="wrap">
+    <div class="foot-links">
+      <a href="https://itera-diary.ru">itera-diary.ru</a>
+      <a href="itera-brandbook.html">Брендбук</a>
+      <a href="itera-diary-diagram.html">Архитектура</a>
+      <a href="index.html">Все материалы</a>
+    </div>
+    <div>© ITERA · дневник, который помнит тебя</div>
+  </div>
+</footer>
+
+</body>
+</html>
