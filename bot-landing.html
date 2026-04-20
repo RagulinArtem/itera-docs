@@ -1,0 +1,702 @@
+<!doctype html>
+<html lang="ru">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>ITERA Bot — Telegram-бот для работы с целями и ежедневными чекинами</title>
+<meta name="description" content="AI-бот в Telegram: ставь цели, делай чекины, получай структурную аналитику дня. 4 режима AI, XP, стрики, еженедельные отчёты." />
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet" />
+<style>
+  :root {
+    --bg: #0a1420;
+    --bg-2: #0f1e2e;
+    --card: #16263a;
+    --card-2: #1a2d44;
+    --border: #233649;
+    --primary: #4ecdc4;
+    --primary-soft: rgba(78,205,196,0.14);
+    --accent: #ffd166;
+    --accent-soft: rgba(255,209,102,0.14);
+    --coral: #ff7675;
+    --purple: #a5b4fc;
+    --text: #e2e8f0;
+    --text-dim: #94a3b8;
+    --text-muted: #64748b;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  html { scroll-behavior: smooth; }
+  body {
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    line-height: 1.6;
+    -webkit-font-smoothing: antialiased;
+    background-image:
+      radial-gradient(ellipse at 15% 0%, rgba(78,205,196,0.18), transparent 55%),
+      radial-gradient(ellipse at 90% 20%, rgba(255,209,102,0.1), transparent 50%),
+      radial-gradient(ellipse at 50% 100%, rgba(165,180,252,0.08), transparent 60%);
+  }
+  a { color: var(--primary); text-decoration: none; }
+  .wrap { max-width: 1080px; margin: 0 auto; padding: 0 24px; }
+
+  /* Nav */
+  nav {
+    position: sticky; top: 0; z-index: 10;
+    background: rgba(10,20,32,0.75);
+    backdrop-filter: blur(12px);
+    border-bottom: 1px solid var(--border);
+  }
+  .nav-in {
+    max-width: 1080px; margin: 0 auto;
+    padding: 14px 24px;
+    display: flex; align-items: center; justify-content: space-between;
+  }
+  .logo {
+    display: inline-flex; align-items: center; gap: 10px;
+    font-weight: 800; font-size: 17px; letter-spacing: -0.01em;
+  }
+  .logo-mark {
+    width: 32px; height: 32px; border-radius: 9px;
+    background: linear-gradient(135deg, var(--primary), var(--accent));
+    display: grid; place-items: center;
+    font-weight: 800; font-size: 15px; color: #0a1420;
+  }
+  .nav-cta {
+    display: inline-flex; align-items: center; gap: 8px;
+    background: var(--primary); color: #0a1420;
+    padding: 10px 18px; border-radius: 10px;
+    font-weight: 700; font-size: 14px;
+    transition: transform .15s ease, box-shadow .15s ease;
+  }
+  .nav-cta:hover { transform: translateY(-1px); box-shadow: 0 10px 24px -10px var(--primary); }
+
+  /* Hero */
+  .hero { padding: 88px 0 72px; text-align: center; }
+  .hero .badge {
+    display: inline-flex; align-items: center; gap: 8px;
+    padding: 6px 14px; border-radius: 100px;
+    background: var(--primary-soft);
+    color: var(--primary);
+    font-size: 13px; font-weight: 600;
+    margin-bottom: 22px;
+    border: 1px solid rgba(78,205,196,0.25);
+  }
+  h1 {
+    font-size: clamp(34px, 6vw, 56px);
+    font-weight: 800; line-height: 1.08;
+    letter-spacing: -0.03em;
+    margin-bottom: 20px;
+  }
+  h1 .grad {
+    background: linear-gradient(90deg, var(--primary), var(--accent));
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+  }
+  .hero p.lead {
+    font-size: 19px;
+    color: var(--text-dim);
+    max-width: 620px;
+    margin: 0 auto 34px;
+  }
+  .cta-row {
+    display: flex; gap: 12px; justify-content: center; flex-wrap: wrap;
+  }
+  .btn-primary {
+    display: inline-flex; align-items: center; gap: 10px;
+    background: var(--primary); color: #0a1420;
+    padding: 16px 28px; border-radius: 12px;
+    font-weight: 700; font-size: 16px;
+    transition: transform .15s ease, box-shadow .15s ease;
+  }
+  .btn-primary:hover { transform: translateY(-2px); box-shadow: 0 18px 40px -16px var(--primary); }
+  .btn-ghost {
+    display: inline-flex; align-items: center; gap: 8px;
+    padding: 16px 24px; border-radius: 12px;
+    border: 1px solid var(--border);
+    color: var(--text); font-weight: 600; font-size: 15px;
+    background: var(--card);
+    transition: border-color .15s ease;
+  }
+  .btn-ghost:hover { border-color: var(--primary); color: var(--primary); }
+  .hero-mini {
+    margin-top: 40px;
+    display: inline-flex; gap: 28px; flex-wrap: wrap; justify-content: center;
+    color: var(--text-muted); font-size: 13px;
+  }
+  .hero-mini span strong { color: var(--text); font-weight: 700; }
+
+  /* Section */
+  section.block { padding: 72px 0; }
+  .eyebrow {
+    display: inline-block;
+    color: var(--primary);
+    font-size: 12px; font-weight: 700;
+    letter-spacing: 0.18em; text-transform: uppercase;
+    margin-bottom: 14px;
+  }
+  h2 {
+    font-size: clamp(26px, 4vw, 36px);
+    font-weight: 800;
+    letter-spacing: -0.02em;
+    line-height: 1.2;
+    margin-bottom: 14px;
+  }
+  .section-sub {
+    color: var(--text-dim);
+    font-size: 17px;
+    max-width: 640px;
+    margin-bottom: 42px;
+  }
+
+  /* Problem */
+  .pains {
+    display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+    gap: 14px;
+  }
+  .pain {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 14px;
+    padding: 22px;
+    font-size: 15px;
+    color: var(--text-dim);
+    position: relative;
+  }
+  .pain::before {
+    content: '"';
+    position: absolute;
+    top: 6px; left: 14px;
+    font-family: Georgia, serif;
+    font-size: 48px; line-height: 1;
+    color: var(--coral);
+    opacity: 0.35;
+  }
+  .pain p { padding-left: 26px; }
+
+  /* Pillars */
+  .pillars {
+    display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: 18px;
+  }
+  .pillar {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 16px;
+    padding: 28px;
+    transition: border-color .2s ease, transform .2s ease;
+  }
+  .pillar:hover { border-color: var(--primary); transform: translateY(-3px); }
+  .pillar .ico {
+    width: 48px; height: 48px; border-radius: 12px;
+    background: var(--primary-soft);
+    display: grid; place-items: center;
+    font-size: 24px;
+    margin-bottom: 18px;
+  }
+  .pillar:nth-child(2) .ico { background: var(--accent-soft); }
+  .pillar:nth-child(3) .ico { background: rgba(165,180,252,0.14); }
+  .pillar h3 { font-size: 19px; font-weight: 700; margin-bottom: 8px; letter-spacing: -0.01em; }
+  .pillar p { color: var(--text-dim); font-size: 15px; }
+
+  /* Steps / How it works */
+  .steps {
+    display: grid; gap: 18px;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  }
+  .step {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 16px;
+    padding: 26px;
+  }
+  .step-num {
+    display: inline-block;
+    font-family: 'JetBrains Mono', monospace;
+    color: var(--primary);
+    font-size: 13px; font-weight: 700;
+    letter-spacing: 0.08em;
+    margin-bottom: 14px;
+  }
+  .step h3 { font-size: 18px; font-weight: 700; margin-bottom: 8px; }
+  .step p { color: var(--text-dim); font-size: 15px; margin-bottom: 16px; }
+  .tg-msg {
+    background: var(--bg);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 14px 16px;
+    font-size: 13.5px;
+    font-family: 'JetBrains Mono', monospace;
+    color: var(--text);
+    line-height: 1.65;
+    white-space: pre-wrap;
+  }
+  .tg-msg .user { color: var(--primary); }
+  .tg-msg .ai { color: var(--accent); }
+  .tg-msg .key { color: var(--purple); }
+
+  /* Modes */
+  .modes {
+    display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+    gap: 14px;
+  }
+  .mode {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 14px;
+    padding: 22px;
+  }
+  .mode .tag {
+    display: inline-block;
+    font-size: 11px; font-weight: 700;
+    letter-spacing: 0.12em; text-transform: uppercase;
+    padding: 3px 9px; border-radius: 6px;
+    margin-bottom: 12px;
+  }
+  .mode.focus .tag { background: var(--primary-soft); color: var(--primary); }
+  .mode.support .tag { background: rgba(255,118,117,0.15); color: var(--coral); }
+  .mode.coach .tag { background: var(--accent-soft); color: var(--accent); }
+  .mode.reflection .tag { background: rgba(165,180,252,0.15); color: var(--purple); }
+  .mode h3 { font-size: 17px; font-weight: 700; margin-bottom: 6px; }
+  .mode p { color: var(--text-dim); font-size: 14px; }
+
+  /* Personas */
+  .personas {
+    display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+    gap: 16px;
+  }
+  .persona {
+    background: linear-gradient(180deg, var(--card) 0%, var(--card-2) 100%);
+    border: 1px solid var(--border);
+    border-radius: 18px;
+    padding: 28px;
+  }
+  .persona .emoji { font-size: 32px; margin-bottom: 14px; }
+  .persona h3 { font-size: 18px; font-weight: 700; margin-bottom: 8px; }
+  .persona p { color: var(--text-dim); font-size: 14.5px; margin-bottom: 14px; }
+  .persona ul { list-style: none; padding: 0; }
+  .persona li {
+    font-size: 14px; color: var(--text-dim);
+    padding: 6px 0 6px 22px; position: relative;
+  }
+  .persona li::before {
+    content: '→'; position: absolute; left: 0;
+    color: var(--primary); font-weight: 700;
+  }
+
+  /* Game */
+  .game {
+    background: linear-gradient(135deg, rgba(78,205,196,0.08), rgba(255,209,102,0.06));
+    border: 1px solid var(--border);
+    border-radius: 20px;
+    padding: 38px;
+    display: grid; gap: 26px;
+    grid-template-columns: 1fr;
+  }
+  @media (min-width: 720px) {
+    .game { grid-template-columns: 1fr 1fr; align-items: center; }
+  }
+  .game h2 { margin-bottom: 10px; }
+  .game p { color: var(--text-dim); font-size: 16px; margin-bottom: 18px; }
+  .stats-grid {
+    display: grid; grid-template-columns: 1fr 1fr; gap: 12px;
+  }
+  .stat {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 18px;
+    text-align: center;
+  }
+  .stat .val {
+    font-size: 28px; font-weight: 800;
+    color: var(--primary);
+    font-family: 'JetBrains Mono', monospace;
+    letter-spacing: -0.02em;
+  }
+  .stat:nth-child(2) .val { color: var(--accent); }
+  .stat:nth-child(3) .val { color: var(--coral); }
+  .stat:nth-child(4) .val { color: var(--purple); }
+  .stat .lbl { color: var(--text-muted); font-size: 12px; margin-top: 4px; }
+
+  /* Privacy */
+  .privacy-list { list-style: none; padding: 0; }
+  .privacy-list li {
+    padding: 14px 0 14px 36px;
+    border-bottom: 1px solid var(--border);
+    font-size: 15px; color: var(--text-dim);
+    position: relative;
+  }
+  .privacy-list li:last-child { border-bottom: none; }
+  .privacy-list li::before {
+    content: '✓'; position: absolute; left: 0; top: 14px;
+    width: 24px; height: 24px; border-radius: 50%;
+    background: var(--primary-soft); color: var(--primary);
+    display: grid; place-items: center;
+    font-weight: 700; font-size: 13px;
+  }
+  .privacy-list strong { color: var(--text); font-weight: 600; }
+
+  /* Pricing */
+  .price {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 20px;
+    padding: 38px;
+    text-align: center;
+    max-width: 520px; margin: 0 auto;
+  }
+  .price .num {
+    font-size: 56px; font-weight: 800;
+    background: linear-gradient(90deg, var(--primary), var(--accent));
+    -webkit-background-clip: text; background-clip: text;
+    color: transparent;
+    line-height: 1;
+    margin-bottom: 8px;
+  }
+  .price .sub { color: var(--text-dim); font-size: 15px; margin-bottom: 22px; }
+  .price .note { color: var(--text-muted); font-size: 12.5px; margin-top: 18px; }
+
+  /* FAQ */
+  details {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 18px 22px;
+    margin-bottom: 10px;
+    cursor: pointer;
+    transition: border-color .15s ease;
+  }
+  details[open] { border-color: var(--primary); }
+  details summary {
+    font-weight: 600; font-size: 16px;
+    list-style: none;
+    display: flex; align-items: center; justify-content: space-between;
+    color: var(--text);
+  }
+  details summary::-webkit-details-marker { display: none; }
+  details summary::after {
+    content: '+';
+    color: var(--primary);
+    font-size: 22px; font-weight: 400;
+    transition: transform .2s ease;
+  }
+  details[open] summary::after { transform: rotate(45deg); }
+  details p {
+    color: var(--text-dim);
+    font-size: 14.5px;
+    margin-top: 12px;
+    padding-top: 12px;
+    border-top: 1px solid var(--border);
+  }
+
+  /* Final CTA */
+  .final {
+    background: linear-gradient(135deg, var(--primary), var(--accent));
+    border-radius: 22px;
+    padding: 56px 36px;
+    text-align: center;
+    color: #0a1420;
+    margin: 20px 0;
+  }
+  .final h2 { color: #0a1420; }
+  .final p { color: rgba(10,20,32,0.75); font-size: 17px; margin-bottom: 26px; }
+  .final .btn-primary {
+    background: #0a1420; color: var(--primary);
+  }
+  .final .btn-primary:hover { box-shadow: 0 18px 40px -16px rgba(10,20,32,0.5); }
+
+  /* Footer */
+  footer {
+    border-top: 1px solid var(--border);
+    padding: 32px 0;
+    color: var(--text-muted);
+    font-size: 13px;
+    text-align: center;
+  }
+  footer a { color: var(--text-dim); margin: 0 10px; }
+</style>
+</head>
+<body>
+
+<nav>
+  <div class="nav-in">
+    <a class="logo" href="index.html">
+      <span class="logo-mark">I</span>
+      ITERA · bot
+    </a>
+    <a class="nav-cta" href="https://t.me/itera_ai_bot" target="_blank" rel="noopener">
+      Открыть в Telegram →
+    </a>
+  </div>
+</nav>
+
+<!-- HERO -->
+<section class="hero wrap">
+  <span class="badge">🎯 Telegram-бот · закрытая бета</span>
+  <h1>Бот, который <span class="grad">помнит твои цели</span><br/>и спрашивает о них каждый день</h1>
+  <p class="lead">Ставишь 1–5 целей. Каждый вечер делаешь 2-минутный чекин. AI разбирает день, связывает его с целями и показывает, куда реально идёшь. Без мотивационных постеров.</p>
+  <div class="cta-row">
+    <a class="btn-primary" href="https://t.me/itera_ai_bot" target="_blank" rel="noopener">
+      Запустить бота в Telegram →
+    </a>
+    <a class="btn-ghost" href="#how">Как это работает</a>
+  </div>
+  <div class="hero-mini">
+    <span>⏱ <strong>2 минуты</strong> на чекин</span>
+    <span>🧠 <strong>4 режима</strong> AI</span>
+    <span>🔥 Стрики · XP · отчёты</span>
+    <span>🔒 Приватно</span>
+  </div>
+</section>
+
+<!-- PROBLEM -->
+<section class="block wrap">
+  <span class="eyebrow">Проблема</span>
+  <h2>Цели звучат красиво 1 января.<br/>А потом теряются в потоке дней.</h2>
+  <p class="section-sub">Знакомо?</p>
+  <div class="pains">
+    <div class="pain"><p>Поставил цели, через 2 недели забыл, что они вообще были.</p></div>
+    <div class="pain"><p>Вроде что-то делаю каждый день, но непонятно — приближает ли это меня к цели или я просто занят.</p></div>
+    <div class="pain"><p>Дневники, трекеры, приложения — всё бросаю через неделю. Слишком много полей, слишком много трения.</p></div>
+    <div class="pain"><p>Мотивационные коучи раздражают. Хочу честного зеркала, а не "ты сможешь, верь в себя".</p></div>
+  </div>
+</section>
+
+<!-- PILLARS -->
+<section class="block wrap">
+  <span class="eyebrow">Что делает ITERA-бот</span>
+  <h2>Три вещи, ради которых его стоит попробовать</h2>
+  <div class="pillars">
+    <div class="pillar">
+      <div class="ico">🎯</div>
+      <h3>Цели, которые не теряются</h3>
+      <p>До 5 активных целей. AI связывает каждый чекин с конкретной целью и помечает: on track, частично, off track или неясно. Видно, где реально движешься, а где только казалось.</p>
+    </div>
+    <div class="pillar">
+      <div class="ico">🧠</div>
+      <h3>Структурная аналитика, не вода</h3>
+      <p>После каждого чекина AI выдаёт: сферу дня, главную задачу, движущую силу, узкое место, ранний сигнал. Не "красавчик, держись" — разбор.</p>
+    </div>
+    <div class="pillar">
+      <div class="ico">🔥</div>
+      <h3>Привычка через геймификацию</h3>
+      <p>XP за чекины, стрики, ачивки, еженедельные отчёты. Не для галочки — чтобы ты возвращался на 7-й, 30-й, 100-й день.</p>
+    </div>
+  </div>
+</section>
+
+<!-- HOW IT WORKS -->
+<section class="block wrap" id="how">
+  <span class="eyebrow">Как это работает</span>
+  <h2>3 шага. Всё в Telegram, никаких отдельных приложений.</h2>
+  <div class="steps">
+    <div class="step">
+      <span class="step-num">01 — ONBOARDING</span>
+      <h3>Ставишь первую цель</h3>
+      <p>Бот спрашивает имя и одну цель — то, что важно прямо сейчас. Потом можно добавить ещё до 5.</p>
+      <div class="tg-msg">🎯 <span class="ai">Опиши свою первую цель.</span>
+Например: <span class="key">выучить Python</span>, <span class="key">бегать 3 раза в неделю</span>, <span class="key">запустить проект</span>.
+
+<span class="user">Запустить MVP до конца квартала.</span></div>
+    </div>
+    <div class="step">
+      <span class="step-num">02 — DAILY CHECK-IN</span>
+      <h3>Вечером — 2-минутный чекин</h3>
+      <p>Настроение одним эмодзи. Текстом — что сделал, что не получилось, что понял. AI сам вытащит структуру.</p>
+      <div class="tg-msg">😐 <span class="user">Весь день прособесил кандидатов, код не трогал. Устал, но нашёл одного хорошего.</span>
+
+<span class="ai">🧭 Сфера:</span> найм
+<span class="ai">🎯 Главный квест:</span> закрыть вакансию Senior
+<span class="ai">✅ Движущая сила:</span> чёткий фильтр кандидатов
+<span class="ai">⚠️ Узкое место:</span> код встал на паузу 3-й день</div>
+    </div>
+    <div class="step">
+      <span class="step-num">03 — ПРОГРЕСС</span>
+      <h3>Отчёты, которыми можно делиться</h3>
+      <p>Еженедельный разбор: где двигался, где застрял, что менять. Красивые share-карточки — можно скинуть другу или в сторис.</p>
+      <div class="tg-msg">📊 <span class="ai">Неделя #12</span>
+
+Чекинов: <span class="key">6/7</span>
+Средний мудборд: <span class="key">🙂 3.8</span>
+Цель "MVP": <span class="key">on track ↑</span>
+Цель "спорт": <span class="key">off track ↓</span>
+
+🔥 Стрик: <span class="key">23 дня</span></div>
+    </div>
+  </div>
+</section>
+
+<!-- MODES -->
+<section class="block wrap">
+  <span class="eyebrow">4 режима AI</span>
+  <h2>Выбираешь тон, который тебе сейчас нужен</h2>
+  <p class="section-sub">Переключаешь прямо перед чекином — одна кнопка. В один день можно строгий разбор, в другой — мягкую поддержку.</p>
+  <div class="modes">
+    <div class="mode focus">
+      <span class="tag">🎯 Фокус</span>
+      <h3>Разбор результатов</h3>
+      <p>Приоритеты, аналитика дня, связка с целями. По умолчанию.</p>
+    </div>
+    <div class="mode support">
+      <span class="tag">💛 Поддержка</span>
+      <h3>Мягкий отклик</h3>
+      <p>Валидация эмоций, один микро-шаг. Для дней, когда всё пошло не так.</p>
+    </div>
+    <div class="mode coach">
+      <span class="tag">🚀 Коуч</span>
+      <h3>Честное зеркало</h3>
+      <p>Прямой вызов, провокационные вопросы. Без сюсюканья.</p>
+    </div>
+    <div class="mode reflection">
+      <span class="tag">🪞 Рефлексия</span>
+      <h3>Вопросы, не советы</h3>
+      <p>Минимум советов, максимум вопросов — чтобы дошёл сам.</p>
+    </div>
+  </div>
+</section>
+
+<!-- PERSONAS -->
+<section class="block wrap">
+  <span class="eyebrow">Для кого</span>
+  <h2>Три типа людей, которым это заходит</h2>
+  <div class="personas">
+    <div class="persona">
+      <div class="emoji">🚀</div>
+      <h3>Фаундер / предприниматель</h3>
+      <p>Параллельно тянешь продукт, найм, продажи — и теряешь, в какой цели реально был прогресс на этой неделе.</p>
+      <ul>
+        <li>Видишь, куда уходит энергия на самом деле</li>
+        <li>Ловишь ранние сигналы узких мест</li>
+        <li>Еженедельный отчёт — вместо самообмана</li>
+      </ul>
+    </div>
+    <div class="persona">
+      <div class="emoji">🎓</div>
+      <h3>Студент / learn-in-public</h3>
+      <p>Учишь что-то сложное — новый язык, стек, навык — и нужна структура, чтобы не скатиться в прокрастинацию.</p>
+      <ul>
+        <li>Фиксируешь ежедневный прогресс по цели</li>
+        <li>XP и стрики держат ритм первых 30 дней</li>
+        <li>Режим "Коуч" ловит, когда себе врёшь</li>
+      </ul>
+    </div>
+    <div class="persona">
+      <div class="emoji">🧗</div>
+      <h3>Мульти-целевой взрослый</h3>
+      <p>Спорт + работа + отношения + боковой проект. Всё важно, но всё время страдает какая-то одна сфера.</p>
+      <ul>
+        <li>Видишь баланс целей в цифрах</li>
+        <li>Понимаешь, какая цель "off track" уже 5 дней</li>
+        <li>Решаешь осознанно, а не по факту</li>
+      </ul>
+    </div>
+  </div>
+</section>
+
+<!-- GAMIFICATION -->
+<section class="block wrap">
+  <div class="game">
+    <div>
+      <span class="eyebrow">Геймификация</span>
+      <h2>Привычка, а не ещё одно приложение, которое ты забросишь</h2>
+      <p>XP за чекины, стрики, щиты для пропусков, ачивки за 7/30/100 дней. Не потому что "геймификация — это модно", а потому что через 14 дней регулярных чекинов видно динамику, которую иначе не поймать.</p>
+      <a class="btn-primary" href="https://t.me/itera_ai_bot" target="_blank" rel="noopener">Начать стрик →</a>
+    </div>
+    <div class="stats-grid">
+      <div class="stat"><div class="val">+15</div><div class="lbl">XP за чекин</div></div>
+      <div class="stat"><div class="val">🔥 23</div><div class="lbl">дня подряд</div></div>
+      <div class="stat"><div class="val">🛡 2</div><div class="lbl">щита в запасе</div></div>
+      <div class="stat"><div class="val">🏅 12</div><div class="lbl">ачивок</div></div>
+    </div>
+  </div>
+</section>
+
+<!-- PRIVACY -->
+<section class="block wrap">
+  <span class="eyebrow">Приватность</span>
+  <h2>Твои чекины — твои чекины</h2>
+  <p class="section-sub">Мы делаем продукт для людей, которые будут писать сюда про настоящее: сомнения, срывы, отношения. Поэтому:</p>
+  <ul class="privacy-list">
+    <li><strong>Данные хранятся зашифрованно.</strong> Доступ только у тебя через твой Telegram-аккаунт.</li>
+    <li><strong>AI-запросы обезличены.</strong> Модели не получают твой Telegram ID и не обучаются на твоих записях.</li>
+    <li><strong>Экспорт в любой момент.</strong> Одна команда — и все чекины у тебя в JSON.</li>
+    <li><strong>Удаление без остатка.</strong> Попросишь удалить — сотрём все записи, цели, отчёты.</li>
+    <li><strong>Никакой рассылки.</strong> Бот пишет только когда ты сам инициируешь или по твоему расписанию напоминаний.</li>
+  </ul>
+</section>
+
+<!-- PRICING -->
+<section class="block wrap">
+  <span class="eyebrow">Цена</span>
+  <h2>Сейчас — бесплатно</h2>
+  <p class="section-sub">Мы в закрытой бете. Ранние пользователи получают полный доступ и влияют на то, каким бот станет.</p>
+  <div class="price">
+    <div class="num">0 ₽</div>
+    <div class="sub">Полный функционал · пока идёт бета</div>
+    <a class="btn-primary" href="https://t.me/itera_ai_bot" target="_blank" rel="noopener">
+      Попробовать в Telegram →
+    </a>
+    <div class="note">После беты останется щедрый free-тариф. Ранние бетатестеры получают пожизненную скидку.</div>
+  </div>
+</section>
+
+<!-- FAQ -->
+<section class="block wrap">
+  <span class="eyebrow">FAQ</span>
+  <h2>Частые вопросы</h2>
+  <div style="max-width: 720px; margin-top: 20px;">
+    <details>
+      <summary>Это заменяет психолога или коуча?</summary>
+      <p>Нет. Это инструмент для структурирования дня и рефлексии по целям. Если тебе нужна терапевтическая работа — иди к специалисту. ITERA хорошо работает рядом с коучем или психологом: между сессиями ты не теряешь ниточку.</p>
+    </details>
+    <details>
+      <summary>Сколько целей можно вести одновременно?</summary>
+      <p>До 5 активных. Опыт показывает, что больше — это обычно "цели-фантомы", о которых ты сам не помнишь. Можно архивировать и добавлять новые.</p>
+    </details>
+    <details>
+      <summary>Что если я пропущу день?</summary>
+      <p>Ничего страшного. У тебя есть "щиты" — они защищают стрик от одного пропуска. А режим "Поддержка" специально создан для дней, когда возвращаешься после паузы.</p>
+    </details>
+    <details>
+      <summary>Какой AI под капотом?</summary>
+      <p>Современные LLM (семейство GPT-4). Анализ структурирован — AI возвращает не свободный текст, а размеченные поля: сфера, задача, вердикт, движущие силы, узкие места. Это даёт повторяемое качество.</p>
+    </details>
+    <details>
+      <summary>Чем это отличается от обычного бумажного дневника?</summary>
+      <p>Бумага не связывает запись сегодняшнего дня с целью, которую ты ставил 3 недели назад. И не покажет тебе через месяц, что цель "спорт" уже 9 дней off track. AI делает именно это.</p>
+    </details>
+    <details>
+      <summary>А если мне не понравится?</summary>
+      <p>Просто перестаёшь пользоваться. Или пишешь /delete — и всех твоих данных как не было. Никаких подписок, никаких "отмените, чтобы не списалось".</p>
+    </details>
+  </div>
+</section>
+
+<!-- FINAL CTA -->
+<section class="wrap">
+  <div class="final">
+    <h2>Поставь цель сегодня вечером</h2>
+    <p>Один чекин — 2 минуты. Первый результат — через 7 дней, когда увидишь собственные паттерны.</p>
+    <a class="btn-primary" href="https://t.me/itera_ai_bot" target="_blank" rel="noopener">
+      Запустить ITERA-бота →
+    </a>
+  </div>
+</section>
+
+<footer>
+  <div class="wrap">
+    <p>
+      © ITERA ·
+      <a href="index.html">все материалы</a> ·
+      <a href="itera-bot-diagram.html">схема бота</a> ·
+      <a href="itera-brandbook.html">брендбук</a> ·
+      <a href="landing.html">веб-дневник</a>
+    </p>
+  </div>
+</footer>
+
+</body>
+</html>
