@@ -6,7 +6,7 @@
 <title>ITERA — AI-дневник, который помнит тебя</title>
 <meta name="description" content="AI-дневник саморефлексии. Замечает темы, которые повторяются между записями, и отражает их обратно. Раз в неделю — инсайт по всему дневнику." />
 <meta property="og:title" content="ITERA — AI-дневник, который помнит тебя" />
-<meta property="og:description" content="ИИ-дневник саморефлексии: 4 техники, память между записями, недельные инсайты. Бесплатно на время беты." />
+<meta property="og:description" content="ИИ-дневник саморефлексии: 5 техник, память между записями, недельные инсайты. Бесплатно на время беты." />
 <meta property="og:type" content="website" />
 <meta property="og:url" content="https://itera-diary.ru" />
 <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -120,6 +120,32 @@
   .hero-sub{
     margin-top:1.5rem;color:var(--text-muted);font-size:.9rem;
   }
+
+  /* ——— product mockup ——— */
+  .mockup{
+    border-radius:14px;
+    overflow:hidden;
+    border:1px solid var(--border);
+    box-shadow:0 18px 50px -18px rgba(108,92,231,.28), 0 4px 14px rgba(0,0,0,.05);
+    background:#fff;
+    line-height:0;
+  }
+  .mockup img{width:100%;height:auto;display:block}
+  .mockup.hero-shot{
+    max-width:920px;margin:2.2rem auto 0;
+    transform:translateY(.4rem);
+  }
+  .shot-caption{
+    text-align:center;color:var(--text-muted);
+    font-size:.88rem;margin-top:.9rem;
+  }
+  .split{
+    display:grid;grid-template-columns:1fr 1fr;
+    gap:clamp(1.5rem,3vw,2.6rem);align-items:center;
+  }
+  @media(max-width:820px){.split{grid-template-columns:1fr}}
+  .split h2{margin-bottom:.6rem}
+  .split .copy p{color:var(--text-secondary);font-size:1.02rem}
 
   /* ——— section shell ——— */
   section{padding:clamp(3rem,6vw,5rem) 0}
@@ -348,6 +374,9 @@
       <a class="btn lg" href="https://itera-diary.ru/register">Написать первую запись</a>
     </div>
     <div class="hero-sub">Без рекламы. Без диагнозов. Только вы и ваши мысли.</div>
+    <figure class="mockup hero-shot">
+      <img src="screens/diary-04-dashboard.png" alt="Дашборд ITERA: настроение за 14 дней, активность, серия" loading="eager" />
+    </figure>
   </div>
 </header>
 
@@ -395,8 +424,8 @@
       </div>
       <div class="pillar b">
         <div class="icon">🧭</div>
-        <h3>4 техники, а не «расскажите о себе»</h3>
-        <p>Свободное письмо, СМЭР (КПТ), работа с тревогой, благодарность. Вы выбираете технику — она направляет структуру, вы сохраняете голос.</p>
+        <h3>5 техник, а не «расскажите о себе»</h3>
+        <p>Свободное письмо, СМЭР (КПТ), работа с тревогой, благодарность, «5 почему». Вы выбираете технику — она направляет структуру, вы сохраняете голос.</p>
       </div>
       <div class="pillar c">
         <div class="icon">🔒</div>
@@ -418,27 +447,26 @@
       <div class="step">
         <div class="step-num">1</div>
         <h3>Выбираете технику</h3>
-        <p>Свободное письмо — когда хочется выговориться. СМЭР — когда нужно распутать мысль. Работа с тревогой — когда накрывает. Благодарность — когда важно зафиксировать хорошее.</p>
-        <div class="demo">
-          🌿 Благодарность · 3 минуты
-        </div>
+        <p>Свободное письмо — когда хочется выговориться. СМЭР — когда нужно распутать мысль. «5 почему» — когда хочется дойти до сути. Тревога и благодарность — для своих случаев.</p>
+        <figure class="mockup" style="margin-top:1rem">
+          <img src="screens/diary-01-five-whys.png" alt="Техника «5 почему» в ITERA: ИИ задаёт вопросы до корневой причины" loading="lazy" />
+        </figure>
       </div>
       <div class="step">
         <div class="step-num">2</div>
         <h3>Пишете так, как чувствуете</h3>
-        <p>Без ограничений по длине. Без осуждения. Просто вы, ваши слова и ваше настроение одним тапом по смайлу.</p>
-        <div class="demo">
-          <em>Сегодня получилось спокойно проговорить с мамой ту тему, от которой обычно я закрываюсь. Кажется, это благодаря тому, что проговорила её с терапевтом вчера…</em>
-        </div>
+        <p>Без ограничений по длине. Без осуждения. ITERA читает запись и отвечает наблюдением, а не советом — с учётом того, что вы писали раньше.</p>
+        <figure class="mockup" style="margin-top:1rem">
+          <img src="screens/diary-02-ai-memory.png" alt="ИИ отражает запись пользователя, связывая её с прошлым контекстом" loading="lazy" />
+        </figure>
       </div>
       <div class="step">
         <div class="step-num">3</div>
-        <h3>Получаете отклик с контекстом</h3>
-        <p>ITERA замечает, что вы писали раньше, и отражает связи. Не советы — наблюдения. А в конце недели — короткий инсайт по всем записям.</p>
-        <div class="demo">
-          <em>Ты писала о той же теме с мамой на прошлой неделе — тогда разговор её избегала.</em>
-          <span class="ai">— ИИ ITERA, учитывая последние записи</span>
-        </div>
+        <h3>Видите паттерны и итоги недели</h3>
+        <p>Активность за 12 недель + авто-инсайт: что повторяется, где эмоциональные качели, на что обратить внимание дальше. Короткий отчёт, не лекция.</p>
+        <figure class="mockup" style="margin-top:1rem">
+          <img src="screens/diary-03-activity.jpg" alt="Тепловая карта активности за 12 недель и авто-итоги недели от ИИ" loading="lazy" />
+        </figure>
       </div>
     </div>
   </div>
@@ -475,6 +503,40 @@
 </section>
 
 
+<!-- ——— ASK YOUR DIARY ——— -->
+<section id="ask">
+  <div class="wrap">
+    <div class="split">
+      <div class="copy">
+        <div class="eyebrow"><span class="dot"></span>Спроси свой дневник</div>
+        <h2>«Что вызывает у меня тревогу?»</h2>
+        <p>ITERA читает ваши записи как контекст и отвечает на прямые вопросы о вас. Не советы из интернета — ответ на ваших собственных данных, с датами и цитатами записей.</p>
+        <p style="margin-top:.8rem">Задайте вопрос сами или начните с подсказок: «Что даёт мне энергию?», «Какие ситуации повторяются?».</p>
+      </div>
+      <figure class="mockup">
+        <img src="screens/diary-05-ai-qa.jpg" alt="Раздел «ИИ-анализ» в ITERA: вопрос пользователя и развёрнутый ответ по записям" loading="lazy" />
+      </figure>
+    </div>
+  </div>
+</section>
+
+<!-- ——— HISTORY & SEARCH ——— -->
+<section style="background:linear-gradient(180deg,rgba(0,206,201,.04) 0%,transparent 100%)">
+  <div class="wrap">
+    <div class="split">
+      <figure class="mockup">
+        <img src="screens/diary-06-history.png" alt="История записей с фильтрами по технике и периоду" loading="lazy" />
+      </figure>
+      <div class="copy">
+        <div class="eyebrow"><span class="dot"></span>История и поиск</div>
+        <h2>Любая запись — за один фильтр</h2>
+        <p>Фильтры по технике (фрирайтинг, СМЭР, тревожность, благодарность, 5 почему) и по периоду (неделя / месяц / всё время). Настроение видно сразу — эмодзи на каждой карточке.</p>
+        <p style="margin-top:.8rem">Полнотекстовый поиск — чтобы вернуться к нужной записи, даже если помните только слово.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
 <!-- ——— PRIVACY ——— -->
 <section>
   <div class="wrap">
@@ -510,7 +572,7 @@
       <div class="amount">0 ₽<small> / навсегда для ранних пользователей</small></div>
       <p style="color:var(--text-secondary);margin-bottom:0">Все техники, AI-память, недельные инсайты и PDF-экспорт.</p>
       <ul>
-        <li>4 техники рефлексии</li>
+        <li>5 техник рефлексии (включая «5 почему»)</li>
         <li>ИИ-отклик на каждую запись с памятью</li>
         <li>Недельные инсайты по всем записям</li>
         <li>История, поиск, график настроения</li>
